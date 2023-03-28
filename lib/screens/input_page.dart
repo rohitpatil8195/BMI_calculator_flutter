@@ -1,9 +1,14 @@
-import 'package:bmi_calculator/reusable_card.dart';
+import 'package:bmi_calculator/main.dart';
+import 'package:bmi_calculator/screens/results_page.dart';
+import 'package:bmi_calculator/components/reusable_card.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'constants.dart';
-import 'icon_content.dart';
-
+import '../components/bottom_button.dart';
+import '../components/round_icon_button.dart';
+import '../constants.dart';
+import '../components/icon_content.dart';
+import 'package:bmi_calculator/bmiBrain.dart';
+import 'results_page.dart';
 
     enum Gender{
        male,
@@ -22,8 +27,9 @@ class _InputPageState extends State<InputPage> {
 Color maleCardColor=kInActiveCardColor;
 Color femaleCardColor=kInActiveCardColor;
  Gender selectedGender=Gender.other;
- double height=180;
-
+ int height=180;
+int weight=60;
+int age=20;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +110,7 @@ Color femaleCardColor=kInActiveCardColor;
                                 max: 220.0,
                                 onChanged: (double newValue) {
                                   setState(() {
-                                    height=newValue;
+                                    height=newValue.toInt();
                                   });
                                 },
                           ),
@@ -120,22 +126,96 @@ Color femaleCardColor=kInActiveCardColor;
 
           Expanded(
             child: Row(
-                children:  const [
-                 Expanded(child: ReusableCard(customColor:kInActiveCardColor)),
-               Expanded(child: ReusableCard(customColor:kInActiveCardColor)),
+                children:  [
+                 Expanded(child: ReusableCard(
+                     customColor:kInActiveCardColor,
+                   cardChild: Column(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     children:  [
+                       const Text('WEIGHT',style: kLabelTextStyle,),
+                       Text('$weight',style: kNumTextStyle,),
+                       Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                         children: [
+                           RoundIconButton(
+                               icon:Icons.remove,
+                             onClicked: (){
+                                 setState(() {
+                                   weight=weight-1;
+                                 });
+                             },
+                           ),
+                           const SizedBox(width: 10,),
+                            RoundIconButton(
+                               icon:Icons.add,
+                                onClicked: (){
+                                  setState(() {
+                                    weight=weight+1;
+                                  });
+                                },
+                           ),
+                         ],
+                       ),
+
+                     ],
+                   ),
+                 )
+                 ),
+                Expanded(
+                   child: ReusableCard(customColor:kInActiveCardColor,
+                     cardChild: Column(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         const Text('AGE',style: kLabelTextStyle,),
+                         Text('$age',style: kNumTextStyle,),
+                         Row(
+                           mainAxisAlignment: MainAxisAlignment.center,
+                           children: [
+                             RoundIconButton(icon: Icons.remove,
+                                 onClicked:(){
+                                  setState(() {
+                                       age=age-1;
+                                  });
+                                 }
+                             ),
+                            const SizedBox(width: 10,),
+                             RoundIconButton(icon: Icons.add,
+                                 onClicked:(){
+                                   setState(() {
+                                     age=age+1;
+                                   });
+                                 }
+                             ),
+                           ],
+                         )
+                       ],
+                     ),
+                   )),
                   ]
             ),
           ),
-          Container(
-            color:kBottomCardColor,
-            margin: const EdgeInsets.only(top: 10),
-            width: double.infinity,
-            height: kBottomContainerHeight,
-          )
+           BottomButton(
+            onClick:(){
+            BmiBrain calc=BmiBrain(height, weight);
+
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>  ResultsPage(
+                bmiResult: calc.bmiCalculator(),
+                resultString: calc.getResult(),
+                interpretation: calc.getInterpretation(),
+
+              )));
+            },
+            buttonTitle:'Calculate',
+           )
         ],
       ),
 
     );
   }
 }
+
+
+
+
+
 
